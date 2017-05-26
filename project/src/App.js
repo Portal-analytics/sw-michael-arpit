@@ -12,7 +12,7 @@ class App extends Component {
     return (
       <div className="App">
         <MuiThemeProvider>
-        <AppBar title="My App">
+        <AppBar title="Motivation Machine!">
         </AppBar>
         </MuiThemeProvider>
         <div className="App-header">
@@ -61,17 +61,6 @@ class Text extends Component{
       <button className="randombutton" onClick={(e)=>this.randbuttonClicked(e)}>CLICK ME RANDOMLY!</button>
       <button className="orderbutton" onClick={(e)=>this.orderbuttonClicked(e)}>CLICK ME IN ORDER!</button>
       <h1>{this.state.motto}</h1>
-      </div>
-    )
-  }
-}
-
-
-class bottom extends Component{
-  render(){
-
-    return(
-      <div>
       <h1 className="footer">
         THIS IS A FOOTER. ARE YOU HAPPY BRENT?
       </h1>
