@@ -1,6 +1,26 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import * as firebase from "firebase";
+import Table from './Table.js'
+
+var config = {
+    apiKey: "AIzaSyC4aPMurZ3Boaun5byKQX1XJ-xoMDO2V_0",
+    authDomain: "contracts-35424.firebaseapp.com",
+    databaseURL: "https://contracts-35424.firebaseio.com",
+    projectId: "contracts-35424",
+    storageBucket: "contracts-35424.appspot.com",
+    messagingSenderId: "116938675520"
+  };
+firebase.initializeApp(config);
+
+var test = {
+  name: "mike",
+  secondName: "arpit",
+}
+
+firebase.database().ref('test').set(test);
+var readData = firebase.database().ref("contracts");
 
 class App extends Component {
   constructor(props){
@@ -12,6 +32,15 @@ class App extends Component {
       contracts:[],
     }
     this.handleSubmit=this.handleSubmit.bind(this);
+  }
+
+  componentWillMount() {
+    readData.on('value', (snapshot) => {
+      this.setState({
+        ...this.state,
+        contracts: snapshot.val().contracts,
+      })
+    })
   }
 
   handleInputChange(field, e) {
@@ -34,7 +63,9 @@ class App extends Component {
         ...this.state,
         contracts: newContracts
       })
-      
+      firebase.database().ref('contracts').set({
+        contracts: newContracts
+      });
     }
 
     handleSubmit(e){
@@ -53,6 +84,9 @@ class App extends Component {
         price: this.state.price,
         contracts: newContracts
       })
+      firebase.database().ref('contracts').set({
+        contracts: newContracts
+      });
       e.preventDefault();
     }
 
@@ -84,82 +118,6 @@ class App extends Component {
       <Table contracts={this.state.contracts} onRowChange={(newName, newDescription, newPrice, index)=>this.changeRow(newName, newDescription, newPrice, index)}/>
       </div>
     );
-  }
-}
-
-class Table extends React.Component{
-
-  constructor(props) {
-    super(props);
-    this.state={
-      isEdit: false,
-      editIndex: 0,
-      newName: "",
-      newDescription: "",
-      newPrice: ""
-    }
-  }
-
-  startEdit(index){
-    this.setState({
-      isEdit: true,
-      editIndex: index,
-      newName: "",
-      newDescription: "",
-      newPrice: ""
-    })
-  }
-
-  handleInputChange(field, event) {
-    this.setState({
-      ...this.state,
-      [field]: event.target.value,
-    })
-  }
-
-  handleResubmit(e){
-    this.props.onRowChange(this.state.newName, this.state.newDescription, this.state.newPrice, this.state.editIndex);
-    e.preventDefault();
-    this.setState({
-      ...this.state,
-      isEdit: false
-
-    })
-  }
-  render(){
-    console.log(this.state);
-    let contractRows=this.props.contracts.map((c, index) =>
-      <tr>
-          <td>{c.name}</td>
-          <td>{c.description}</td>
-          <td>{c.price}</td>
-          <button type="button" onClick={() => this.startEdit(index)}> Edit </button>
-      </tr>
-    )
-
-    if (this.state.isEdit) {
-      contractRows[this.state.editIndex] = (
-        <form onSubmit={(e) => this.handleResubmit(e)}>
-          <input type="text" placeholder="New Name" onChange={(e) => this.handleInputChange("newName", e)}/>
-          <input type="text" placeholder="New Description" onChange={(e) => this.handleInputChange("newDescription", e)}/>
-          <input type="text" placeholder="New Price" onChange={(e) => this.handleInputChange("newPrice", e)}/>
-          <input type="submit" value="Done" />
-        </form>
-      )
-    }
-
-    return(
-      <div>
-        <table>
-          <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-          </tr>
-          {contractRows}
-        </table>
-      </div>
-    )
   }
 }
 
